@@ -1,0 +1,20 @@
+{
+	"name": "integrationRuntime-SSIS",
+	"properties": {
+		"type": "Managed",
+		"description": "CREATING THIS sisi IR for on-prem SSIS package",
+		"typeProperties": {
+			"computeProperties": {
+				"location": "East US",
+				"nodeSize": "Standard_D4_v3",
+				"numberOfNodes": 2,
+				"maxParallelExecutionsPerNode": 4
+			},
+			"ssisProperties": {
+				"edition": "Standard",
+				"runtimeVersion": "2017",
+				"licenseType": "LicenseIncluded"
+			}
+		}
+	}
+}
