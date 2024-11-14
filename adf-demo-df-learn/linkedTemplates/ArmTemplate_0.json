@@ -53,6 +53,29 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/integrationRuntime-SSIS')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "Managed",
+				"description": "CREATING THIS sisi IR for on-prem SSIS package",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "East US",
+						"nodeSize": "Standard_D4_v3",
+						"numberOfNodes": 2,
+						"maxParallelExecutionsPerNode": 4
+					},
+					"ssisProperties": {
+						"edition": "Standard",
+						"runtimeVersion": "2017",
+						"licenseType": "LicenseIncluded"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Json_ds')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -96,6 +119,52 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage_src_ls')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline_SSIS')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Execute SSIS package",
+						"type": "ExecuteSSISPackage",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"packageLocation": {
+								"type": "InlinePackage",
+								"typeProperties": {
+									"packageName": "Package.dtsx",
+									"packageContent": "VER001_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",
+									"packageLastModifiedDate": "2024-11-14T14:31:22.298Z UTC+05.5:00"
+								}
+							},
+							"environmentPath": null,
+							"connectVia": {
+								"referenceName": "integrationRuntime-SSIS",
+								"type": "IntegrationRuntimeReference"
+							},
+							"projectConnectionManagers": {},
+							"packageConnectionManagers": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/integrationRuntime-SSIS')]"
 			]
 		},
 		{
